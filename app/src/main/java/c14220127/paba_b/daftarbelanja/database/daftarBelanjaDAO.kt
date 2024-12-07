@@ -17,6 +17,7 @@ interface daftarBelanjaDAO {
     @Delete
     fun delete (daftar: daftarBelanja)
 
-    @Query("SELECT * FROM daftarBelanja ORDER BY id asc")
+    @Query("SELECT * FROM daftarBelanja WHERE id=:isi_id")
+    suspend fun getItem (isi_id:Int): daftarBelanja
     fun selectAll(): MutableList<daftarBelanja>
 }
