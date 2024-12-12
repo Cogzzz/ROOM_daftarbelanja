@@ -4,18 +4,48 @@ import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import c14220127.paba_b.daftarbelanja.database.daftarBelanja
 
 class adapterDaftar(private val daftarBelanja: MutableList<daftarBelanja>): RecyclerView.Adapter<adapterDaftar.ListViewHolder>() {
+    private lateinit var onItemClickCallback: OnItemClickCallback
+    // Membuat interface untuk aksi hapus
+    interface OnItemClickCallback{
+        fun delData(dtBelanja: daftarBelanja)
+        fun selesaiData(dtBelanja: daftarBelanja)
+    }
+
+    fun setOnItemClickCallback(onItemClickCallback: OnItemClickCallback){
+        this.onItemClickCallback = onItemClickCallback
+    }
+
+
+    // Fungsi untuk mengisi data ke adapter
+    fun isiData(daftar: List<daftarBelanja>) {
+        daftarBelanja.clear()            // Bersihkan data lama
+        daftarBelanja.addAll(daftar)     // Tambahkan data baru
+        notifyDataSetChanged()           // Beritahu RecyclerView ada perubahan
+    }
+
     inner class ListViewHolder (itemView: View): RecyclerView.ViewHolder(itemView){
         val _tvItemBarang = itemView.findViewById<TextView>(R.id.tvItemBarang)
         val _tvTanggal = itemView.findViewById<TextView>(R.id.tvTanggal)
         val _tvJumlahBarang = itemView.findViewById<TextView>(R.id.tvJumlahBarang)
         val _btnEdit = itemView.findViewById<ImageButton>(R.id.btnEdit)
         val _btnDelete = itemView.findViewById<ImageButton>(R.id.btnDelete)
+        val _btnSelesai = itemView.findViewById<Button>(R.id.btnSelesai)
+
+        init {
+            _btnDelete.setOnClickListener{
+                onItemClickCallback.delData(daftarBelanja[adapterPosition])
+            }
+            _btnSelesai.setOnClickListener{
+                onItemClickCallback.selesaiData(daftarBelanja[adapterPosition])
+            }
+        }
     }
 
     override fun onCreateViewHolder(
@@ -40,27 +70,9 @@ class adapterDaftar(private val daftarBelanja: MutableList<daftarBelanja>): Recy
             intent.putExtra("addEdit", 1)
             it.context.startActivity(intent)
         }
-        holder._btnDelete.setOnClickListener {
-            onItemClickCallBack.delData(daftar)
-        }
     }
 
     override fun getItemCount(): Int {
         return daftarBelanja.size
-    }
-
-    interface OnItemClickCallBack {
-        fun delData(dtBelanja: daftarBelanja)
-    }
-
-    private lateinit var onItemClickCallBack : OnItemClickCallBack
-    fun setOnItemClickCallBack(onItemClickCallBack: OnItemClickCallBack) {
-        this.onItemClickCallBack = onItemClickCallBack
-    }
-
-    fun isiData (daftar: MutableList<daftarBelanja>) {
-        daftarBelanja.clear()
-        daftarBelanja.addAll(daftar)
-        notifyDataSetChanged()
     }
 }
